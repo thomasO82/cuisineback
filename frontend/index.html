@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestion de Recettes</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Gestion de Recettes</h1>
+        <button id="open-recette-modal" class="add-recette-btn">Ajouter une recette</button>
+
+        <section id="liste-recettes">
+            <h2>Liste des recettes</h2>
+            <div id="recettes-container"></div>
+        </section>
+    </div>
+
+    <!-- Modale pour l'ajout de recette -->
+    <div id="modal-recette" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" data-modal="recette">&times;</span>
+            <h2>Ajouter une recette</h2>
+            <form id="form-recette">
+                <label for="nom-recette">Titre :</label>
+                <input type="text" id="nom-recette" name="nom" required>
+
+                <label for="description">Instructions :</label>
+                <textarea id="description" name="description" required></textarea>
+
+                <div id="ingredients-list">
+                    <h3>Ingrédients</h3>
+                    <div id="ingredients-container"></div>
+                    <button type="button" id="add-ingredient-row">Ajouter un ingrédient</button>
+                    <button type="button" id="add-ingredient-btn">Créer un nouvel ingrédient</button>
+                </div>
+
+                <button type="submit">Créer la recette</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modale pour la modification de recette -->
+    <div id="modal-edit-recette" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" data-modal="edit-recette">&times;</span>
+            <h2>Modifier la recette</h2>
+            <form id="form-edit-recette">
+                <input type="hidden" id="edit-recette-id">
+                <label for="edit-nom-recette">Titre :</label>
+                <input type="text" id="edit-nom-recette" name="nom" required>
+
+                <label for="edit-description">Instructions :</label>
+                <textarea id="edit-description" name="description" required></textarea>
+
+                <div id="edit-ingredients-list">
+                    <h3>Ingrédients</h3>
+                    <div id="edit-ingredients-container"></div>
+                    <button type="button" id="edit-add-ingredient-row">Ajouter un ingrédient</button>
+                    <button type="button" id="edit-add-ingredient-btn">Créer un nouvel ingrédient</button>
+                </div>
+
+                <button type="submit">Modifier la recette</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modale pour l'ajout d'ingrédient -->
+    <div id="modal-ingredient" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" data-modal="ingredient">&times;</span>
+            <h2>Ajouter un nouvel ingrédient</h2>
+            <form id="form-ingredient">
+                <label for="nom-ingredient">Nom de l'ingrédient :</label>
+                <input type="text" id="nom-ingredient" name="nom" required>
+
+            
+
+                <button type="submit">Ajouter</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
