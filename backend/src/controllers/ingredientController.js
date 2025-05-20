@@ -1,6 +1,5 @@
 const Ingredient = require('../models/Ingredient');
 
-// Créer un nouvel ingrédient
 exports.createIngredient = async (req, res) => {
     try {
         const ingredient = new Ingredient(req.body);
@@ -11,7 +10,6 @@ exports.createIngredient = async (req, res) => {
     }
 };
 
-// Obtenir tous les ingrédients
 exports.getAllIngredients = async (req, res) => {
     try {
         const ingredients = await Ingredient.find();
@@ -21,7 +19,6 @@ exports.getAllIngredients = async (req, res) => {
     }
 };
 
-// Obtenir un ingrédient par son ID
 exports.getIngredientById = async (req, res) => {
     try {
         const ingredient = await Ingredient.findById(req.params.id);
@@ -34,7 +31,6 @@ exports.getIngredientById = async (req, res) => {
     }
 };
 
-// Mettre à jour un ingrédient
 exports.updateIngredient = async (req, res) => {
     try {
         const ingredient = await Ingredient.findByIdAndUpdate(
@@ -51,7 +47,6 @@ exports.updateIngredient = async (req, res) => {
     }
 };
 
-// Supprimer un ingrédient
 exports.deleteIngredient = async (req, res) => {
     try {
         const ingredient = await Ingredient.findByIdAndDelete(req.params.id);

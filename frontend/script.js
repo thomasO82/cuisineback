@@ -1,4 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const closeIngredientModal = document.querySelector('.close-modal[data-modal="ingredient"]');
+
     const addRecetteBtn = document.getElementById('open-recette-modal');
     const recetteModal = document.getElementById('modal-recette');
     const editRecetteModal = document.getElementById('modal-edit-recette');
@@ -9,7 +11,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const addIngredientRowBtn = document.getElementById('add-ingredient-row');
     const editAddIngredientRowBtn = document.getElementById('edit-add-ingredient-row');
     const ingredientModal = document.getElementById('modal-ingredient');
-    const closeIngredientModal = document.querySelector('.close-modal[data-modal="ingredient"]');
     const formIngredient = document.getElementById('form-ingredient');
     const formRecette = document.getElementById('form-recette');
     const formEditRecette = document.getElementById('form-edit-recette');
@@ -68,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ nom, unite })
+                body: JSON.stringify({ nom})
             });
 
             if (response.ok) {
@@ -88,8 +89,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Ajouter une ligne d'ingrédient
-    addIngredientRowBtn.addEventListener('click', () => {
+     // Ajouter la première ligne d'ingrédient
+     function addIngredientRow() {
         const row = document.createElement('div');
         row.className = 'ingredient-row';
 
@@ -137,17 +138,10 @@ document.addEventListener('DOMContentLoaded', () => {
         row.appendChild(removeBtn);
         ingredientsList.appendChild(row);
         loadIngredients(select);
-    });
+    }
 
-    // Supprimer une ligne d'ingrédient
-    ingredientsList.addEventListener('click', (e) => {
-        if (e.target.classList.contains('remove-ingredient-btn')) {
-            e.target.parentElement.remove();
-        }
-    });
-
-    // Charger les ingrédients dans un select
-    async function loadIngredients(select) {
+     // Charger les ingrédients dans un select
+     async function loadIngredients(select) {
         try {
             const response = await fetch('http://localhost:3000/api/ingredients');
             const ingredients = await response.json();
@@ -162,19 +156,34 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+
+    // Ajouter une ligne d'ingrédient
+    addIngredientRowBtn.addEventListener('click', () => {
+        addIngredientRow();
+    });
+
+    // Supprimer une ligne d'ingrédient
+    ingredientsList.addEventListener('click', (e) => {
+        if (e.target.classList.contains('remove-ingredient-btn')) {
+            e.target.parentElement.remove();
+        }
+    });
+
+   
+
     // Ajouter une recette
     formRecette.addEventListener('submit', async (e) => {
         e.preventDefault();
-        const nom = document.getElementById('nom-recette').value;
-        const description = document.getElementById('description').value;
+        const titre = document.getElementById('nom-recette').value;
+        const instructions = document.getElementById('description').value;
         const ingredients = [];
         const ingredientRows = document.querySelectorAll('.ingredient-row');
         
         ingredientRows.forEach(row => {
             const ingredientId = row.querySelector('select[name="ingredients[]"]').value;
-            const quantite = parseFloat(row.querySelector('input[name="quantites[]"]').value);
+            const qty = parseFloat(row.querySelector('input[name="quantites[]"]').value);
             const unite = row.querySelector('select[name="unites[]"]').value;
-            ingredients.push({ ingredient: ingredientId, quantite, unite });
+            ingredients.push({ ingredient: ingredientId, qty, unite });
         });
 
         try {
@@ -183,7 +192,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ nom, description, ingredients })
+                body: JSON.stringify({ titre, instructions, ingredients })
             });
 
             if (response.ok) {
@@ -198,6 +207,17 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error('Erreur:', error);
         }
     });
+
+       // Charger les recettes existantes
+       async function loadRecettes() {
+        try {
+            const response = await fetch('http://localhost:3000/api/recettes');
+            const recettes = await response.json();
+            recettes.forEach(recette => displayRecette(recette));
+        } catch (error) {
+            console.error('Erreur:', error);
+        }
+    }
 
     // Afficher une recette
     function displayRecette(recette) {
@@ -216,6 +236,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const ingredientsList = document.createElement('ul');
         recette.ingredients.forEach(i => {
+            console.log(i);
+            
             const li = document.createElement('li');
             li.textContent = `${i.qty} ${i.unite} de ${i.ingredient.nom}`;
             ingredientsList.appendChild(li);
@@ -236,68 +258,9 @@ document.addEventListener('DOMContentLoaded', () => {
         recettesContainer.appendChild(div);
     }
 
-    // Charger les recettes existantes
-    async function loadRecettes() {
-        try {
-            const response = await fetch('http://localhost:3000/api/recettes');
-            const recettes = await response.json();
-            recettes.forEach(recette => displayRecette(recette));
-        } catch (error) {
-            console.error('Erreur:', error);
-        }
-    }
+ 
 
-    // Ajouter la première ligne d'ingrédient
-    function addIngredientRow() {
-        const row = document.createElement('div');
-        row.className = 'ingredient-row';
-
-        const select = document.createElement('select');
-        select.name = 'ingredients[]';
-        select.required = true;
-
-        const defaultOption = document.createElement('option');
-        defaultOption.value = '';
-        defaultOption.textContent = 'Sélectionner un ingrédient';
-        select.appendChild(defaultOption);
-
-        const input = document.createElement('input');
-        input.type = 'number';
-        input.name = 'quantites[]';
-        input.step = '0.01';
-        input.required = true;
-        input.placeholder = 'Quantité';
-
-        const uniteSelect = document.createElement('select');
-        uniteSelect.name = 'unites[]';
-        uniteSelect.required = true;
-
-        const uniteOptions = [
-            { value: 'gramme', text: 'Grammes' },
-            { value: 'litre', text: 'Litres' },
-            { value: 'kg', text: 'Kilogrammes' }
-        ];
-
-        uniteOptions.forEach(option => {
-            const opt = document.createElement('option');
-            opt.value = option.value;
-            opt.textContent = option.text;
-            uniteSelect.appendChild(opt);
-        });
-
-        const removeBtn = document.createElement('button');
-        removeBtn.type = 'button';
-        removeBtn.className = 'remove-ingredient-btn';
-        removeBtn.textContent = 'Supprimer';
-
-        row.appendChild(select);
-        row.appendChild(input);
-        row.appendChild(uniteSelect);
-        row.appendChild(removeBtn);
-        ingredientsList.appendChild(row);
-        loadIngredients(select);
-    }
-
+   
     // Ouvrir la modale de modification
     function openEditModal(recette) {
         console.log('Recette à modifier:', recette);
@@ -440,8 +403,8 @@ document.addEventListener('DOMContentLoaded', () => {
     formEditRecette.addEventListener('submit', async (e) => {
         e.preventDefault();
         const id = document.getElementById('edit-recette-id').value;
-        const nom = document.getElementById('edit-nom-recette').value;
-        const description = document.getElementById('edit-description').value;
+        const titre = document.getElementById('edit-nom-recette').value;
+        const instructions = document.getElementById('edit-description').value;
         const ingredients = [];
         const ingredientRows = document.querySelectorAll('#edit-ingredients-container .ingredient-row');
         
@@ -460,7 +423,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ nom, description, ingredients })
+                body: JSON.stringify({ titre, instructions, ingredients })
             });
 
             if (response.ok) {
